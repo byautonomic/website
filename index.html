@@ -27,6 +27,29 @@
             overflow-x: hidden;
         }
 
+        .fade-overlay {
+            position: fixed;
+            left: 0;
+            width: 100vw;
+            height: 60px;
+            z-index: 101;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+        .fade-top {
+            top: 0;
+            background: linear-gradient(to bottom, #f6ede8FF 0%, #f6ede800 100%);
+            opacity: 1;
+        }
+        .fade-bottom {
+            bottom: 0;
+            background: linear-gradient(to top, #f6ede8FF 0%, #f6ede800 100%);
+            opacity: 1;
+        }
+        .fade-overlay.hidden {
+            opacity: 0 !important;
+        }
+
         .gradient-bg {
             position: fixed;
             top: 0;
@@ -115,6 +138,51 @@
             line-height: 1.1;
         }
 
+        .main-title-animated {
+            background: linear-gradient(90deg, #58c28b, #6995d4, #685dd0, #d1b083, #c9a7d0, #97c4af, #58c28b);
+            background-size: 300% 100%;
+            background-position: 0% 50%;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            opacity: 0;
+            transition:
+                opacity 0.8s cubic-bezier(0.4,0,0.2,1), 
+                color 0.5s cubic-bezier(0.4,0,0.2,1) 1.2s;
+        }
+
+        .main-title-gradientin {
+            animation: gradient-slide 1.5s ease-in-out 0.2s forwards;
+        }
+
+        @keyframes gradient-slide {
+            0% {
+                background-position: 0% 50%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                background-position: 30% 50%;
+            }
+            60% {
+                opacity: 1;
+                background-position: 90% 50%;
+            }
+            100% {
+                opacity: 1;
+                background-position: 100% 50%;
+            }
+        }
+        
+        .main-title-to-black {
+            color: #000 !important;
+            -webkit-background-clip: unset !important;
+            background-clip: unset !important;
+            background: none !important;
+            transition:
+                color 0.65s cubic-bezier(0.4,0,0.2,1);
+        }
+
         .tagline {
             font-size: 24px;
             color: #58c28b;
@@ -189,7 +257,7 @@
 
         .benchmark-section {
             background: rgba(255, 255, 255, 0.4);
-            border-radius: 8px;
+            border-radius: 25px;
             padding: 40px;
             margin-top: 40px;
         }
@@ -219,7 +287,7 @@
             gap: 5px;
             background: rgba(255, 255, 255, 0.6);
             padding: 5px;
-            border-radius: 20px;
+            border-radius: 25px;
         }
 
         .lang-btn {
@@ -227,7 +295,7 @@
             border: none;
             background: transparent;
             cursor: pointer;
-            border-radius: 15px;
+            border-radius: 25px;
             font-family: 'Arial Nova Condensed', Arial, sans-serif;
             font-size: 14px;
             font-weight: 600;
@@ -254,7 +322,7 @@
             display: flex;
             align-items: center;
             background: rgba(255, 255, 255, 0.8);
-            border-radius: 30px;
+            border-radius: 25px;
             padding: 14px 20px 14px 50px;
             border: 0.5px solid #ddd;
             transition: border-color 0.3s ease;
@@ -335,7 +403,7 @@
         .metric-item {
             padding: 25px;
             background: rgba(255, 255, 255, 0.3);
-            border-radius: 6px;
+            border-radius: 25px;
             border-left: 3px solid #6995d4;
         }
 
@@ -371,10 +439,18 @@
             .chart-container {
                 height: 300px;
             }
+
+            .fade-overlay {
+                height: 35px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Fade overlays -->
+    <div class="fade-overlay fade-top"></div>
+    <div class="fade-overlay fade-bottom"></div>
+    
     <div class="lang-toggle">
         <button class="lang-btn active" onclick="switchLang('en')">EN</button>
         <button class="lang-btn" onclick="switchLang('pt')">PT</button>
@@ -391,7 +467,11 @@
             <div class="logo-container">
                 <img src="logo.png" alt="Autonomic" class="logo">
             </div>
-            <h1 data-en="AGI for the real world" data-pt="AGI para o mundo real">AGI for the real world</h1>
+            <h1 id="main-title"
+                data-en="AGI for the real world" data-pt="AGI para o mundo real"
+                class="main-title-animated">
+                AGI for the real world
+            </h1>
             <p class="tagline" data-en="Autonomous AI systems that work." data-pt="Sistemas de IA autônomos que funcionam.">Autonomous AI systems that work.</p>
             
             <div class="input-container">
@@ -487,25 +567,32 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mainTitle = document.getElementById('main-title');
+
+            mainTitle.classList.add('main-title-gradientin');
+
+            setTimeout(function () {
+                mainTitle.classList.add('main-title-to-black');
+            }, 1750);
+        });
+
         let currentLang = 'en';
 
         function switchLang(lang) {
             currentLang = lang;
             
-            // Update button states
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // Update all elements with data attributes
             document.querySelectorAll('[data-en]').forEach(el => {
                 if (el.tagName === 'INPUT') {
                     el.placeholder = el.getAttribute('data-placeholder-' + lang);
                 } else {
                     const text = el.getAttribute('data-' + lang);
                     if (text) {
-                        // Preserve highlight spans
                         if (el.innerHTML.includes('<span class="highlight">')) {
                             el.innerHTML = text.replace('practical, deployable AGI', '<span class="highlight">practical, deployable AGI</span>')
                                               .replace('AGI prática e implementável', '<span class="highlight">AGI prática e implementável</span>');
@@ -519,8 +606,18 @@
                 }
             });
 
-            // Update chart labels
             updateChart(lang);
+
+            if (document.getElementById('main-title')) {
+                const mainTitle = document.getElementById('main-title');
+                mainTitle.classList.remove('main-title-to-black');
+                mainTitle.classList.remove('main-title-gradientin');
+                void mainTitle.offsetWidth;
+                mainTitle.classList.add('main-title-gradientin');
+                setTimeout(function () {
+                    mainTitle.classList.add('main-title-to-black');
+                }, 1750);
+            }
         }
 
         function updateChart(lang) {
@@ -603,6 +700,31 @@
                 }
             }
         });
+
+        function updateFadeOverlays() {
+            const scrollY = window.scrollY || window.pageYOffset;
+            const windowH = window.innerHeight;
+            const docH = Math.max(
+                document.body.scrollHeight, document.documentElement.scrollHeight,
+                document.body.offsetHeight, document.documentElement.offsetHeight,
+                document.body.clientHeight, document.documentElement.clientHeight
+            );
+            const fadeTop = document.querySelector('.fade-top');
+            const fadeBottom = document.querySelector('.fade-bottom');
+            if (scrollY <= 5) {
+                fadeTop.classList.add('hidden');
+            } else {
+                fadeTop.classList.remove('hidden');
+            }
+            if (scrollY + windowH >= docH - 5) {
+                fadeBottom.classList.add('hidden');
+            } else {
+                fadeBottom.classList.remove('hidden');
+            }
+        }
+        window.addEventListener('scroll', updateFadeOverlays, { passive: true });
+        window.addEventListener('resize', updateFadeOverlays);
+        document.addEventListener('DOMContentLoaded', updateFadeOverlays);
     </script>
 </body>
 </html>

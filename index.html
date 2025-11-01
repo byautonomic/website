@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomic - Autonomous AI Systems</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/arial-nova');
+        
+        @font-face {
+            font-family: 'Bernoru';
+            src: url('https://fonts.cdnfonts.com/css/bernoru');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f6ede8;
+            color: #000;
+            font-family: 'Arial Nova Condensed', Arial, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(45deg, #58c28b, #97c4af);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(135deg, #6995d4, #685dd0);
+            top: 40%;
+            right: -100px;
+            animation-delay: -7s;
+        }
+
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(90deg, #c9a7d0, #d1b083);
+            bottom: -100px;
+            left: 30%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(50px, -80px) scale(1.1);
+            }
+            66% {
+                transform: translate(-30px, 60px) scale(0.9);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 80px 60px;
+        }
+
+        header {
+            margin-bottom: 100px;
+        }
+
+        .logo-container {
+            display: inline-block;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            height: 60px;
+            width: auto;
+        }
+
+        h1 {
+            font-family: 'Bernoru', sans-serif;
+            font-size: 72px;
+            font-weight: 400;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .tagline {
+            font-size: 24px;
+            color: #58c28b;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        section {
+            margin-bottom: 120px;
+        }
+
+        h2 {
+            font-family: 'Bernoru', sans-serif;
+            font-size: 48px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            letter-spacing: -1px;
+        }
+
+        .label {
+            display: inline-block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #58c28b;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 20px;
+            margin-bottom: 20px;
+            max-width: 650px;
+        }
+
+        .coming-soon {
+            display: inline-block;
+            background: linear-gradient(90deg, #58c28b, #97c4af, #6995d4);
+            background-size: 200% 100%;
+            animation: gradient-shift 3s ease infinite;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .product-card {
+            border-left: 3px solid #58c28b;
+            padding-left: 30px;
+            margin-bottom: 60px;
+        }
+
+        .product-card h3 {
+            font-family: 'Bernoru', sans-serif;
+            font-size: 36px;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .benchmark-section {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            padding: 40px;
+            margin-top: 40px;
+        }
+
+        .benchmark-intro {
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 30px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, transparent 0%, rgba(88, 194, 139, 0.2) 50%, transparent 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .lang-toggle {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            z-index: 100;
+            display: flex;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 5px;
+            border-radius: 20px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 15px;
+            font-family: 'Arial Nova Condensed', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active {
+            background: #58c28b;
+            color: #fff;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 40px;
+            max-width: 650px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            padding: 14px 20px 14px 50px;
+            border: 0.5px solid #ddd;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #58c28b;
+        }
+
+        .plus-icon {
+            position: absolute;
+            bottom: 21px;
+            left: 18px;
+            width: 20px;
+            height: 20px;
+            color: #58c28b;
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .input-field {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-family: 'Arial Nova Condensed', Arial, sans-serif;
+            font-size: 16px;
+            color: #000;
+            outline: none;
+        }
+
+        .input-field::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .submit-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #000;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.95);
+        }
+
+        .arrow-icon {
+            width: 20px;
+            height: 20px;
+            color: #fff;
+        }
+
+        footer {
+            margin-top: 150px;
+            padding-top: 50px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            opacity: 0.6;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .metric-item {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            border-left: 3px solid #6995d4;
+        }
+
+        .metric-number {
+            font-family: 'Bernoru', sans-serif;
+            font-size: 42px;
+            color: #58c28b;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 48px;
+            }
+
+            h2 {
+                font-size: 36px;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-toggle">
+        <button class="lang-btn active" onclick="switchLang('en')">EN</button>
+        <button class="lang-btn" onclick="switchLang('pt')">PT</button>
+    </div>
+
+    <div class="gradient-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <img src="logo.png" alt="Autonomic" class="logo">
+            </div>
+            <h1 data-en="AGI for the real world" data-pt="AGI para o mundo real">AGI for the real world</h1>
+            <p class="tagline" data-en="Autonomous AI systems that work." data-pt="Sistemas de IA autônomos que funcionam.">Autonomous AI systems that work.</p>
+            
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <span class="plus-icon">+</span>
+                    <input type="text" class="input-field" placeholder="Ask the AI to do something for you..." data-placeholder-en="Ask the AI to do something for you..." data-placeholder-pt="Peça para a IA fazer coisas para você...">
+                </div>
+                <button class="submit-btn">
+                    <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <section id="about">
+            <span class="label" data-en="About" data-pt="Sobre">About</span>
+            <h2>Autonomic</h2>
+            <p data-en="We're a Brazilian AI startup focused on achieving practical, deployable AGI. Not the science fiction kind—the kind that handles complex work tasks autonomously, right now." 
+               data-pt="Somos uma startup brasileira de IA focada em alcançar AGI prática e implementável. Não do tipo ficção científica—do tipo que lida com tarefas complexas de trabalho de forma autônoma, agora.">
+               We're a Brazilian AI startup focused on achieving <span class="highlight">practical, deployable AGI</span>. Not the science fiction kind—the kind that handles complex work tasks autonomously, right now.
+            </p>
+            <p data-en="Our approach centers on Aurora, an LLM built specifically for remote work and agentic tasks. While others chase benchmarks, we're solving real problems: editing videos, building dashboards, creating reports, and even administering entire companies."
+               data-pt="Nossa abordagem se concentra na Aurora, um LLM construído especificamente para trabalho remoto e tarefas agênticas. Enquanto outros perseguem benchmarks, estamos resolvendo problemas reais: editando vídeos, construindo dashboards, criando relatórios e até administrando empresas inteiras.">
+               Our approach centers on Aurora, an LLM built specifically for remote work and agentic tasks. While others chase benchmarks, we're solving real problems: editing videos, building dashboards, creating reports, and even administering entire companies.
+            </p>
+            <p data-en="Aurora Beta launches December 2025, with the full release in Q1 2026."
+               data-pt="Aurora Beta lança em dezembro de 2025, com o lançamento completo no Q1 de 2026.">
+               Aurora Beta launches December 2025, with the full release in Q1 2026.
+            </p>
+        </section>
+
+        <section id="products">
+            <span class="label" data-en="Products" data-pt="Produtos">Products</span>
+            <h2 data-en="What we're building" data-pt="O que estamos construindo">What we're building</h2>
+            
+            <div class="product-card">
+                <h3>Aurora Beta</h3>
+                <p data-en="Our flagship LLM designed for autonomous work. Aurora doesn't just answer questions—it completes entire workflows. From complex image editing to company administration, Aurora handles tasks that require planning, execution, and adaptation."
+                   data-pt="Nossa LLM principal projetada para trabalho autônomo. Aurora não apenas responde perguntas—ela completa fluxos de trabalho inteiros. De edição complexa de imagens à administração de empresas, Aurora lida com tarefas que exigem planejamento, execução e adaptação.">
+                   Our flagship LLM designed for autonomous work. Aurora doesn't just answer questions—it completes entire workflows. From complex image editing to company administration, Aurora handles tasks that require planning, execution, and adaptation.
+                </p>
+                <span class="coming-soon" data-en="December 2025" data-pt="Dezembro 2025">December 2025</span>
+            </div>
+
+            <div class="product-card">
+                <h3>Autonomic OS</h3>
+                <p data-en="A complete operating environment for autonomous AI agents. Think of it as the infrastructure layer that lets AI systems work independently, securely, and at scale."
+                   data-pt="Um ambiente operacional completo para agentes de IA autônomos. Pense nisso como a camada de infraestrutura que permite que sistemas de IA trabalhem de forma independente, segura e em escala.">
+                   A complete operating environment for autonomous AI agents. Think of it as the infrastructure layer that lets AI systems work independently, securely, and at scale.
+                </p>
+                <span class="coming-soon" data-en="Coming 2026" data-pt="Em breve 2026">Coming 2026</span>
+            </div>
+        </section>
+
+        <section id="benchmark">
+            <span class="label" data-en="Performance" data-pt="Desempenho">Performance</span>
+            <h2>AutonomicBench</h2>
+            
+            <div class="benchmark-section">
+                <div class="benchmark-intro">
+                    <p data-en="We built AutonomicBench: a 300-task dataset that tests real-world capabilities. Image and video editing, report creation, dashboard building, website development, and company administration."
+                       data-pt="Construímos o AutonomicBench: um dataset de 300 tarefas que testa capacidades do mundo real. Edição de imagem e vídeo, criação de relatórios, construção de dashboards, desenvolvimento de websites e administração de empresas.">
+                       We built AutonomicBench: a 300-task dataset that tests real-world capabilities. Image and video editing, report creation, dashboard building, website development, and company administration.
+                    </p>
+                    <p data-en="The average human scores 200/300. Expert humans score 300/300."
+                       data-pt="O humano médio pontua 200/300. Humanos especialistas pontuam 300/300.">
+                       <strong>The average human scores 200/300. Expert humans score 300/300.</strong>
+                    </p>
+                </div>
+
+                <div class="metrics">
+                    <div class="metric-item">
+                        <div class="metric-number">73</div>
+                        <div class="metric-label" data-en="Aurora Beta Score" data-pt="Pontuação Aurora Beta">Aurora Beta Score</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-number">#1</div>
+                        <div class="metric-label" data-en="Current Ranking" data-pt="Ranking Atual">Current Ranking</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="benchmarkChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p data-en="Autonomic © 2025 — Rio de Janeiro, Brazil" data-pt="Autonomic © 2025 — Rio de Janeiro, Brasil">Autonomic © 2025 — Rio de Janeiro, Brazil</p>
+        </footer>
+    </div>
+
+    <script>
+        let currentLang = 'en';
+
+        function switchLang(lang) {
+            currentLang = lang;
+            
+            // Update button states
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update all elements with data attributes
+            document.querySelectorAll('[data-en]').forEach(el => {
+                if (el.tagName === 'INPUT') {
+                    el.placeholder = el.getAttribute('data-placeholder-' + lang);
+                } else {
+                    const text = el.getAttribute('data-' + lang);
+                    if (text) {
+                        // Preserve highlight spans
+                        if (el.innerHTML.includes('<span class="highlight">')) {
+                            el.innerHTML = text.replace('practical, deployable AGI', '<span class="highlight">practical, deployable AGI</span>')
+                                              .replace('AGI prática e implementável', '<span class="highlight">AGI prática e implementável</span>');
+                        } else if (el.innerHTML.includes('<strong>')) {
+                            el.innerHTML = text.replace('The average human scores 200/300. Expert humans score 300/300.', '<strong>The average human scores 200/300. Expert humans score 300/300.</strong>')
+                                              .replace('O humano médio pontua 200/300. Humanos especialistas pontuam 300/300.', '<strong>O humano médio pontua 200/300. Humanos especialistas pontuam 300/300.</strong>');
+                        } else {
+                            el.textContent = text;
+                        }
+                    }
+                }
+            });
+
+            // Update chart labels
+            updateChart(lang);
+        }
+
+        function updateChart(lang) {
+            const labels = lang === 'en' 
+                ? ['Aurora Beta', 'Manus 1.5', 'Grok 4', 'Claude Sonnet 4.5', 'ChatGPT5-Agent', 'Avg Human', 'Expert Human']
+                : ['Aurora Beta', 'Manus 1.5', 'Grok 4', 'Claude Sonnet 4.5', 'ChatGPT5-Agent', 'Humano Médio', 'Humano Expert'];
+            
+            benchmarkChart.data.labels = labels;
+            benchmarkChart.options.plugins.tooltip.callbacks.label = function(context) {
+                return context.parsed.y + (lang === 'en' ? '/300 tasks' : '/300 tarefas');
+            };
+            benchmarkChart.update();
+        }
+
+        const ctx = document.getElementById('benchmarkChart').getContext('2d');
+        
+        const benchmarkChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Aurora Beta', 'Manus 1.5', 'Grok 4', 'Claude Sonnet 4.5', 'ChatGPT5-Agent', 'Avg Human', 'Expert Human'],
+                datasets: [{
+                    label: 'AutonomicBench Score',
+                    data: [73, 67, 61, 58, 54, 200, 300],
+                    backgroundColor: [
+                        '#58c28b',
+                        '#97c4af',
+                        '#6995d4',
+                        '#685dd0',
+                        '#c9a7d0',
+                        'rgba(0, 0, 0, 0.1)',
+                        'rgba(0, 0, 0, 0.15)'
+                    ],
+                    borderRadius: 4,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        bodyFont: {
+                            size: 14
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + '/300 tasks';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 300,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
